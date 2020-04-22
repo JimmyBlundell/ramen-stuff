@@ -10,7 +10,7 @@ outputfile = open('variety.txt', 'w')
 
 next(reader)
 
-#Print each individual word into a separate file
+#Print each individual word into a separate file.
 for line in reader:
     for word in line[2].split():
         outputfile.write(word + '\n')
