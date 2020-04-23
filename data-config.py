@@ -7,22 +7,48 @@ from collections import Counter
 # Replace brand names that appear only once with "Other"
 
 reader = csv.reader(open('ramen-ratings.csv', 'r'))
+new_data = csv.writer(open('new-data.csv', 'w'))
 
 next(reader)
 
-list_of_words = []
-
 #Grab each individual word and put into separate list
+list_of_words = []
 for line in reader:
     for word in line[2].split():
         list_of_words.append(word)
 
 #Create list of top 100 used words
 counter = Counter(list_of_words)
-top_hundred = counter.most_common(100)
-print(top_hundred)
-for item in top_hundred:
-    print(item)
+counter = counter.most_common(100)
+
+#Add top 100 words to set for quicker access.
+top_hundred = set({})
+for word in counter:
+    top_hundred.add(word[0])
+
+#Add brand names to string to keep track of # of occurrences
+brand_names = ""
+reader = csv.reader(open('ramen-ratings.csv', 'r'))
+next(reader)
+
+for line in reader:
+    brand_names += line[1] + '\n'
+print(brand_names)
+'Use brand_names.count(brand) to iterate through original list and alter if needed'
+
+
+
+
+
+#Edit csv, turning each line into list, then inserting back into csv
+'''for line in reader:
+    lst = list(line)
+    print(lst)
+'''
+
+
+
+#
 
 
 '''Now that I have a list of the top 100, I will go back through the csv,
@@ -43,5 +69,8 @@ Write to new csv:
             (Figure out how to work with spaces here)
         Write string to csv[2]
     Continue for others, ignoring top 10.
+    
+As for brand names: Use map with key as brand, value as count. Search through, and increment each time if not found.
+Then, go back through csv. Search all brand names again. If count == 1, change to other. Else, continue.
 '''
 
