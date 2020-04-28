@@ -4,8 +4,6 @@
 import csv as csv
 from collections import Counter
 
-# Replace brand names that appear only once with "Other"
-
 reader = csv.reader(open('ramen-ratings.csv', 'r'))
 next(reader)
 
@@ -44,7 +42,7 @@ writer = csv.writer(open('new-data.csv', 'w'))
 writer.writerow(header)
 
 
-#For reference: Review #,Brand,Variety,Style,Country,Stars,Top Ten
+#Make new CSV file
 for line in reader:
     lst = list(line)
     #All brands appearing once should be "Other"
@@ -60,8 +58,13 @@ for line in reader:
                 temp += words[i]
             else:
                 temp += ' ' + words[i]
-
     lst[2] = temp
+
+    #Convert ratings to floats
+    if (lst[5] == "Unrated"):
+        continue
+    lst[5] = float(lst[5])
+
     #Ignore Top Ten
     lst[6] = ""
     writer.writerow(lst)
