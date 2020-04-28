@@ -3,7 +3,9 @@
 #from tensorflow import keras
 from data_config import configure_csv
 
-oldFile = input("Name of csv file to be configured: ")
-newFile = input("Name of new file to store processed data: ")
+oldFile = "ramen-ratings.csv"
+training_data = "training_data.csv"
+test_data = "test_data.csv"
+validation_data = "validation-data.csv"
 
-configure_csv(oldFile, newFile)
+configure_csv(oldFile, training_data, test_data, validation_data)

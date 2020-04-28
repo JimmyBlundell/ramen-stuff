@@ -3,9 +3,11 @@ import csv as csv
 from collections import Counter
 
 
-def configure_csv(oldFile, newFile):
+def configure_csv(oldFile, training_data, test_data, validation_data):
 
     reader = csv.reader(open(oldFile, 'r'))
+    data_len = len(list(reader))
+    reader = csv.reader(open(oldFile, 'r')) #Initializing again because I'm not sure how else to do it in the moment :)
     next(reader)
 
     #Grab each individual word and put into separate list
@@ -39,12 +41,17 @@ def configure_csv(oldFile, newFile):
     reader = csv.reader(open(oldFile, 'r'))
     header = next(reader)
 
-    writer = csv.writer(open(newFile, 'w'))
-    writer.writerow(header)
+    writer1 = csv.writer(open(training_data, 'w'))
+    writer2 = csv.writer(open(test_data, 'w'))
+    writer3 = csv.writer(open(validation_data, 'w'))
+    writer1.writerow(header)
+    writer2.writerow(header)
+    writer3.writerow(header)
 
-
+    count = 0
     #Make new CSV file
     for line in reader:
+        count += 1
         lst = list(line)
         #All brands appearing once should be "Other"
         if (brand_names.count(lst[1]) == 1):
@@ -68,5 +75,10 @@ def configure_csv(oldFile, newFile):
 
         #Ignore Top Ten
         lst[6] = ""
-        writer.writerow(lst)
+        if (count <= data_len*0.8):
+            writer1.writerow(lst)
+        elif (count <= data_len*0.9):
+            writer2.writerow(lst)
+        else:
+            writer3.writerow(lst)
 
