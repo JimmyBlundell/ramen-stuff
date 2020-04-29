@@ -44,9 +44,9 @@ def configure_csv(oldFile, training_data, test_data, validation_data):
     writer1 = csv.writer(open(training_data, 'w'))
     writer2 = csv.writer(open(test_data, 'w'))
     writer3 = csv.writer(open(validation_data, 'w'))
-    writer1.writerow(header)
-    writer2.writerow(header)
-    writer3.writerow(header)
+    writer1.writerow(header[:-1])
+    writer2.writerow(header[:-1])
+    writer3.writerow(header[:-1])
 
     count = 0
     #Make new CSV file
@@ -68,17 +68,16 @@ def configure_csv(oldFile, training_data, test_data, validation_data):
                     temp += ' ' + words[i]
         lst[2] = temp
 
-        #Convert ratings to floats
+        #Convert ratings to floats, ignoring the few reviews that are unrated
         if (lst[5] == "Unrated"):
             continue
         lst[5] = float(lst[5])
 
-        #Ignore Top Ten
-        lst[6] = ""
+        #Create training, test, and validation sets, ignoring the "Top 10"
         if (count <= data_len*0.8):
-            writer1.writerow(lst)
+            writer1.writerow(lst[0:6])
         elif (count <= data_len*0.9):
-            writer2.writerow(lst)
+            writer2.writerow(lst[0:6])
         else:
-            writer3.writerow(lst)
+            writer3.writerow(lst[0:6])
 
