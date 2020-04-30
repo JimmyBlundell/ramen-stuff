@@ -1,9 +1,13 @@
-
 import csv as csv
+import array as arr
 from collections import Counter
 
-
 def configure_csv(oldFile, training_data, test_data, validation_data):
+
+    oldFile = "ramen-ratings.csv"
+    training_data = "training-data.csv"
+    test_data = "test-data.csv"
+    validation_data = "validation-data.csv"
 
     reader = csv.reader(open(oldFile, 'r'))
     data_len = len(list(reader))
@@ -20,13 +24,16 @@ def configure_csv(oldFile, training_data, test_data, validation_data):
     #Create list of top 100 used words
     counter = Counter(list_of_words)
     counter = counter.most_common(100)
-
-
-    #Add top 100 words to set for quicker access.
-    top_hundred = set({})
+    list_of_words = []
     for word in counter:
-        top_hundred.add(word[0])
+        list_of_words.append(word[0])
 
+
+    #Create dictionary mapping index to each word in top 100
+    theDict = {}
+    for i in range(0, 100):
+        theDict[list_of_words[i]] = i
+    print(theDict)
 
     #Add brand names to string to keep track of # of occurrences using count() method
     brand_names = ""
@@ -53,20 +60,18 @@ def configure_csv(oldFile, training_data, test_data, validation_data):
     for line in reader:
         count += 1
         lst = list(line)
+
         #All brands appearing once should be "Other"
         if (brand_names.count(lst[1]) == 1):
             lst[1] = "Other"
+        lst[0] = str(lst[0])
 
-        #Include only variety words in top 100
-        temp = ""
-        words = line[2].split()
-        for i in range(len(words)):
-            if (words[i] in top_hundred):
-                if (len(temp.split()) == 0):
-                    temp += words[i]
-                else:
-                    temp += ' ' + words[i]
-        lst[2] = temp
+        #TODO: Will this work with just regular array as I'm doing?
+        array = arr.array('i', [0]*100)
+        for word in line[2].split():
+            if word in theDict:
+                array[theDict[word]] += 1
+        lst[2] = array
 
         #Convert ratings to floats, ignoring the few reviews that are unrated
         if (lst[5] == "Unrated"):
