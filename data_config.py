@@ -46,7 +46,7 @@ for i in range(0, 100):
     varietyDict[list_of_varieties[i]] = i
 
 
-#For later: map each element in lists to unique integer for later data processing
+#For later: map each element in lists to unique integer to translate everything to numbers - may need this for personal use when NN spits out results? Idk man
 brandDict = {}
 for i in range(len(list_of_brands)):
     brandDict[list_of_brands[i]] = i+1
@@ -59,10 +59,6 @@ for i in range(len(list_of_styles)):
 countryDict = {}
 for i in range(len(list_of_countries)):
     countryDict[list_of_countries[i]] = i+1
-
-print(brandDict)
-print(styleDict)
-print(countryDict)
 
 
 #Add brand names to string to keep track of # of occurrences using count() method
@@ -79,7 +75,7 @@ reader = csv.reader(open(oldFile, 'r'))
 header = next(reader)
 
 header[2] = "Variety1"
-for i in range(100):
+for i in range(99):
     header.insert(i+3, "Variety" + str(i+2))
 
 print(header)
@@ -87,9 +83,10 @@ print(header)
 writer1 = csv.writer(open(training_data, 'w'))
 writer2 = csv.writer(open(test_data, 'w'))
 writer3 = csv.writer(open(validation_data, 'w'))
-writer1.writerow(header[:-1])
-writer2.writerow(header[:-1])
-writer3.writerow(header[:-1])
+#TODO: Not sure yet if I'll need these - I may at the very least need the header for features/label?
+#writer1.writerow(header[:-1])
+#writer2.writerow(header[:-1])
+#writer3.writerow(header[:-1])
 
 count = 0
 #Make new CSV file
@@ -100,33 +97,31 @@ for line in reader:
     #Convert ratings to floats, ignoring the few reviews that are unrated
     if (lst[5] == "Unrated"):
         continue
-    lst[5] = float(lst[5])
 
     #All brands appearing once should be "Other"
     if (brand_names.count(lst[1]) == 1):
-        lst[1] = "Other"
-    lst[0] = str(lst[0])
+        lst[1] = brandDict["Other"]
+    else:
+        lst[1] = brandDict[lst[1]]
+
 
     style = lst[3]
     country = lst[4]
-    stars = lst[5]
+    stars = float(lst[5])
 
-    #TODO: Will this work with just regular array as I'm doing?
+    #Add all varietes as a frequency according to an index in an array (this is extending the columns of the csv file)
     array = list([0]*100)
     for word in line[2].split():
         if word in varietyDict:
             array[varietyDict[word]] += 1
     lst[2:101] = array
 
-    lst.append(style)
-    lst.append(country)
-    lst.append(stars)
+    lst.extend([styleDict[style], countryDict[country], stars])
 
-    #Create training, test, and validation sets, ignoring the "Top 10"
+    #Create training, test, and validation sets, ignoring the Review # and "Top 10"
     if (count <= data_len*0.8):
-        writer1.writerow(lst[0:104])
+        writer1.writerow(lst[1:105])
     elif (count <= data_len*0.9):
-        writer2.writerow(lst[0:104])
+        writer2.writerow(lst[1:105])
     else:
-        writer3.writerow(lst[0:104])
-
+        writer3.writerow(lst[1:105])
