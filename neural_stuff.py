@@ -15,6 +15,7 @@ validation_data_csv = "validation-data.csv"
 configure_csv(oldFile, training_data_csv, test_data_csv, validation_data_csv)
 
 #TODO: Not even sure if I'll use dataframes - may just convert csv to numpy arrays and pass those directly?
+#TODO: ALternatively, perhaps I can go back and make dataframes from my new csv! Or, follow the 'directly from csv' tutorial altogether.
 
 dataframe_training = pd.read_csv(training_data_csv)
 dataframe_test = pd.read_csv(test_data_csv)
