@@ -18,14 +18,9 @@ dataframe_training = pd.read_csv(training_data_csv)
 dataframe_test = pd.read_csv(test_data_csv)
 dataframe_validation = pd.read_csv(validation_data_csv)
 
-#print(dataframe_training.head())
-#print(dataframe_training.dtypes)
 
 dataframe_training['Brand'] = pd.Categorical(dataframe_training['Brand'])
 dataframe_training['Brand'] = dataframe_training.Brand.cat.codes
-
-dataframe_training['Variety'] = pd.Categorical(dataframe_training['Variety'])
-dataframe_training['Variety'] = dataframe_training.Variety.cat.codes
 
 dataframe_training['Style'] = pd.Categorical(dataframe_training['Style'])
 dataframe_training['Style'] = dataframe_training.Style.cat.codes
@@ -33,9 +28,12 @@ dataframe_training['Style'] = dataframe_training.Style.cat.codes
 dataframe_training['Country'] = pd.Categorical(dataframe_training['Country'])
 dataframe_training['Country'] = dataframe_training.Country.cat.codes
 
-target = dataframe_training.pop('Stars')
-training_dataset = tf.data.Dataset.from_tensor_slices((dataframe_training.values, target.values))
 
+#target = dataframe_training.pop('Stars')
+#training_dataset = tf.data.Dataset.from_tensor_slices((dataframe_training.values, target.values))
+
+#for feat, targ in training_dataset.take(5):
+#  print ('Features: {}, Target: {}'.format(feat, targ))
 
 #print(dataframe_training.head(10))
 #print(dataframe_training.dtypes)
