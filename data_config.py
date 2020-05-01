@@ -5,7 +5,6 @@ from collections import Counter
 #def configure_csv(oldFile, training_data, test_data, validation_data):
 
 oldFile = "ramen-ratings.csv"
-newFile = "newFile"
 training_data = "training-data.csv"
 test_data = "test-data.csv"
 validation_data = "validation-data.csv"
@@ -31,8 +30,6 @@ for line in reader:
 list_of_brands = list(dict.fromkeys(list_of_brands))
 list_of_styles = list(dict.fromkeys(list_of_styles))
 list_of_countries = list(dict.fromkeys(list_of_countries))
-
-
 
 
 #Create list of top 100 used words
@@ -81,6 +78,12 @@ for line in reader:
 reader = csv.reader(open(oldFile, 'r'))
 header = next(reader)
 
+header[2] = "Variety1"
+for i in range(100):
+    header.insert(i+3, "Variety" + str(i+2))
+
+print(header)
+
 writer1 = csv.writer(open(training_data, 'w'))
 writer2 = csv.writer(open(test_data, 'w'))
 writer3 = csv.writer(open(validation_data, 'w'))
@@ -94,29 +97,36 @@ for line in reader:
     count += 1
     lst = list(line)
 
-    #All brands appearing once should be "Other"
-    if (brand_names.count(lst[1]) == 1):
-        lst[1] = "Other"
-    lst[0] = str(lst[0])
-
-    #TODO: Will this work with just regular array as I'm doing?
-    array = list([0]*100)
-    array = np.asarray(array)
-    for word in line[2].split():
-        if word in varietyDict:
-            array[varietyDict[word]] += 1
-    lst[2] = array
-
     #Convert ratings to floats, ignoring the few reviews that are unrated
     if (lst[5] == "Unrated"):
         continue
     lst[5] = float(lst[5])
 
+    #All brands appearing once should be "Other"
+    if (brand_names.count(lst[1]) == 1):
+        lst[1] = "Other"
+    lst[0] = str(lst[0])
+
+    style = lst[3]
+    country = lst[4]
+    stars = lst[5]
+
+    #TODO: Will this work with just regular array as I'm doing?
+    array = list([0]*100)
+    for word in line[2].split():
+        if word in varietyDict:
+            array[varietyDict[word]] += 1
+    lst[2:101] = array
+
+    lst.append(style)
+    lst.append(country)
+    lst.append(stars)
+
     #Create training, test, and validation sets, ignoring the "Top 10"
     if (count <= data_len*0.8):
-        writer1.writerow(lst[0:6])
+        writer1.writerow(lst[0:104])
     elif (count <= data_len*0.9):
-        writer2.writerow(lst[0:6])
+        writer2.writerow(lst[0:104])
     else:
-        writer3.writerow(lst[0:6])
+        writer3.writerow(lst[0:104])
 
