@@ -2,9 +2,8 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow import feature_column
 from tensorflow.keras import layers
-from sklearn.model_selection import train_test_split
+#from keras.utils.np.utils import to_categorical
 from data_config import configure_csv
 
 oldFile = "ramen-ratings.csv"
@@ -32,52 +31,34 @@ dataframe_training['Country'] = pd.Categorical(dataframe_training['Country'])
 dataframe_training['Country'] = dataframe_training.Country.cat.codes
 
 
-#target = dataframe_training.pop('Stars')
-#training_dataset = tf.data.Dataset.from_tensor_slices((dataframe_training.values, target.values))
+training_target = dataframe_training.pop('Stars')
+#Change target values to one-hot encoding
+training_target = keras.utils.to_categorical(training_target)
+validation_target = dataframe_validation.pop('Stars')
+#Change target values to one-hot encoding
+validation_target = keras.utils.to_categorical(validation_target)
 
-#for feat, targ in training_dataset.take(5):
-#  print ('Features: {}, Target: {}'.format(feat, targ))
+training_dataset = tf.data.Dataset.from_tensor_slices((dataframe_training.values, training_target))
+validation_dataset = tf.data.Dataset.from_tensor_slices((dataframe_validation.values, validation_target))
 
-#print(dataframe_training.head(10))
-#print(dataframe_training.dtypes)
+training_dataset = training_dataset.shuffle(len(dataframe_training)).batch(1)
+validation_dataset = validation_dataset.shuffle(len(dataframe_validation)).batch(1)
 
+def get_compiled_model():
+  model = tf.keras.Sequential([
+    tf.keras.layers.Dense(10, activation='relu'),
+    tf.keras.layers.Dense(10, activation='relu'),
+    tf.keras.layers.Dense(1),
+    tf.keras.layers.Dense(1, activation='tanh') #Read somewhere tanh was superior to sigmoid so why not
+  ])
 
-#Function to make a tf dataset out of pandas dataframe - Not sure if I need at the moment!
-#def make_tf_dataset(dataframe, shuffle=True, batch_size=43):
-#    dataframe = dataframe.copy()
-#    labels = dataframe.pop('Stars')
-#    ds = tf.data.Dataset.from_tensor_slices((dict(dataframe), labels))
-#    if shuffle:
-#        ds = ds.shuffle(buffer_size=len(dataframe))
-#    ds = ds.batch(batch_size)
-#    return ds
+  model.compile(optimizer='adam',
+                loss=tf.keras.losses.MeanAbsoluteError(),
+                metrics=['accuracy'])
+  return model
 
-#training_ds = make_tf_dataset(dataframe_training, batch_size=43)
-#test_ds = make_tf_dataset(dataframe_test, shuffle=False, batch_size=43)
-#validation_ds = make_tf_dataset(validation_data, suffle=False, batch_size=43)
-
-
-
-
-
-
-#label = 'Stars'
+model = get_compiled_model()
+model.fit(training_dataset, batch_size=None, epochs=30, validation_data=(validation_dataset))
 
 
-#batch_size = 32
-
-#dataset = tf.data.experimental.make_csv_dataset(
-#      training_data,
-#      batch_size,
-#      label_name=label,
-#      na_value="?",
-#      num_epochs=1,
-#      ignore_errors=True,
-#      )
-
-
-#For my own purposes, visualizing the batches in my dataset
-#for batch, label in dataset.take(1):
-#    for key, value in batch.items():
-#      print("{:2s}: {}".format(key,value.numpy()))
 

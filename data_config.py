@@ -11,7 +11,7 @@ def configure_csv(oldFile, training_data, test_data, validation_data):
 
     reader = csv.reader(open(oldFile, 'r'))
     data_len = len(list(reader))
-    reader = csv.reader(open(oldFile, 'r')) #Initializing again because I'm not sure how else to do it in the moment :)
+    reader = csv.reader(open(oldFile, 'r')) #Need to condense all this in a whlie loop to avoid initializing the reader over and over
     next(reader)
 
     #Create lists of words in varieties, styles, brands, and country
@@ -46,7 +46,7 @@ def configure_csv(oldFile, training_data, test_data, validation_data):
         varietyDict[list_of_varieties[i]] = i
 
 
-    #For later: map each element in lists to unique integer to translate everything to numbers - may need this for personal use when NN spits out results? Idk man
+    #For later: map each element in lists to unique integer to translate everything to numbers
     brandDict = {}
     for i in range(len(list_of_brands)):
         brandDict[list_of_brands[i]] = i+1
@@ -74,19 +74,21 @@ def configure_csv(oldFile, training_data, test_data, validation_data):
     reader = csv.reader(open(oldFile, 'r'))
     header = next(reader)
 
-    header[2] = "Variety1"
-    for i in range(99):
-        header.insert(i+3, "Variety" + str(i+2))
-
+    #Remove review number, not important
+    header.pop(0)
     print(header)
+
+    header[1] = "Variety1"
+    for i in range(99):
+        header.insert(i+2, "Variety" + str(i+2))
 
     writer1 = csv.writer(open(training_data, 'w'))
     writer2 = csv.writer(open(test_data, 'w'))
     writer3 = csv.writer(open(validation_data, 'w'))
     #TODO: Not sure yet if I'll need these - I may at the very least need the header for features/label?
-    #writer1.writerow(header[:-1])
-    #writer2.writerow(header[:-1])
-    #writer3.writerow(header[:-1])
+    writer1.writerow(header[:-1])
+    writer2.writerow(header[:-1])
+    writer3.writerow(header[:-1])
 
     count = 0
     #Make new CSV file
@@ -100,23 +102,22 @@ def configure_csv(oldFile, training_data, test_data, validation_data):
 
         #All brands appearing once should be "Other"
         if (brand_names.count(lst[1]) == 1):
-            lst[1] = brandDict["Other"]
+            lst[1] = float(brandDict["Other"])
         else:
-            lst[1] = brandDict[lst[1]]
-
+            lst[1] = float(brandDict[lst[1]])
 
         style = lst[3]
         country = lst[4]
         stars = float(lst[5])
 
         #Add all varietes as a frequency according to an index in an array (this is extending the columns of the csv file)
-        array = list([0]*100)
+        array = list([0.0]*100)
         for word in line[2].split():
             if word in varietyDict:
-                array[varietyDict[word]] += 1
+                array[varietyDict[word]] += 1.0
         lst[2:101] = array
 
-        lst.extend([styleDict[style], countryDict[country], stars])
+        lst.extend([float(styleDict[style]), float(countryDict[country]), stars])
 
         #Create training, test, and validation sets, ignoring the Review # and "Top 10"
         if (count <= data_len*0.8):
