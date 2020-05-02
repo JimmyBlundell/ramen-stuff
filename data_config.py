@@ -76,8 +76,8 @@ def configure_csv(oldFile, training_data, test_data, validation_data):
 
     #Remove review number, not important
     header.pop(0)
-    print(header)
 
+    #Create columns for 100 varieties
     header[1] = "Variety1"
     for i in range(99):
         header.insert(i+2, "Variety" + str(i+2))
@@ -85,7 +85,7 @@ def configure_csv(oldFile, training_data, test_data, validation_data):
     writer1 = csv.writer(open(training_data, 'w'))
     writer2 = csv.writer(open(test_data, 'w'))
     writer3 = csv.writer(open(validation_data, 'w'))
-    #TODO: Not sure yet if I'll need these - I may at the very least need the header for features/label?
+
     writer1.writerow(header[:-1])
     writer2.writerow(header[:-1])
     writer3.writerow(header[:-1])
