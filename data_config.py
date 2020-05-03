@@ -14,22 +14,12 @@ def configure_csv(oldFile, training_data, test_data, validation_data):
     reader = csv.reader(open(oldFile, 'r')) #Need to condense all this in a whlie loop to avoid initializing the reader over and over
     next(reader)
 
-    #Create lists of words in varieties, styles, brands, and country
+    #Create lists of words in varieties
     list_of_varieties = []
-    list_of_brands = []
-    list_of_styles = []
-    list_of_countries = []
+
     for line in reader:
         for word in line[2].split():
             list_of_varieties.append(word)
-        list_of_brands.append(line[1])
-        list_of_styles.append(line[3])
-        list_of_countries.append(line[4])
-
-    #Remove duplicates
-    list_of_brands = list(dict.fromkeys(list_of_brands))
-    list_of_styles = list(dict.fromkeys(list_of_styles))
-    list_of_countries = list(dict.fromkeys(list_of_countries))
 
 
     #Create list of top 100 used words
@@ -44,21 +34,6 @@ def configure_csv(oldFile, training_data, test_data, validation_data):
     varietyDict = {}
     for i in range(0, 100):
         varietyDict[list_of_varieties[i]] = i
-
-
-    #For later: map each element in lists to unique integer to translate everything to numbers
-    brandDict = {}
-    for i in range(len(list_of_brands)):
-        brandDict[list_of_brands[i]] = i+1
-    brandDict["Other"] = len(brandDict) + 1
-
-    styleDict = {}
-    for i in range(len(list_of_styles)):
-        styleDict[list_of_styles[i]] = i+1
-
-    countryDict = {}
-    for i in range(len(list_of_countries)):
-        countryDict[list_of_countries[i]] = i+1
 
 
     #Add brand names to string to keep track of # of occurrences using count() method
@@ -77,7 +52,7 @@ def configure_csv(oldFile, training_data, test_data, validation_data):
     #Remove review number, not important
     header.pop(0)
 
-    #Create columns for 100 varieties
+    #Create columns for 100 varieties - this is more for my sake than anything
     header[1] = "Variety1"
     for i in range(99):
         header.insert(i+2, "Variety" + str(i+2))
@@ -102,9 +77,7 @@ def configure_csv(oldFile, training_data, test_data, validation_data):
 
         #All brands appearing once should be "Other"
         if (brand_names.count(lst[1]) == 1):
-            lst[1] = float(brandDict["Other"])
-        else:
-            lst[1] = float(brandDict[lst[1]])
+            lst[1] = "Other"
 
         style = lst[3]
         country = lst[4]
@@ -117,7 +90,8 @@ def configure_csv(oldFile, training_data, test_data, validation_data):
                 array[varietyDict[word]] += 1.0
         lst[2:101] = array
 
-        lst.extend([float(styleDict[style]), float(countryDict[country]), stars])
+        #Add style, country, and stars back in
+        lst.extend([style, country, stars])
 
         #Create training, test, and validation sets, ignoring the Review # and "Top 10"
         if (count <= data_len*0.8):
