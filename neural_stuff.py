@@ -75,11 +75,11 @@ validation_dataset = validation_dataset.shuffle(len(dataframe_validation)).batch
 def get_compiled_model():
   model = tf.keras.Sequential([
     tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Dense(500, activation=tf.nn.relu),
+    tf.keras.layers.Dense(50, activation=tf.nn.relu),
     tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Dense(250, activation=tf.nn.relu),
+    tf.keras.layers.Dense(50, activation=tf.nn.relu),
     tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Dense(125, activation=tf.nn.relu),
+    tf.keras.layers.Dense(50, activation=tf.nn.relu),
     tf.keras.layers.BatchNormalization(),
     tf.keras.layers.Dense(50, activation=tf.nn.relu),
     tf.keras.layers.BatchNormalization(),
