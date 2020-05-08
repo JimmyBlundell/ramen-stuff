@@ -60,15 +60,13 @@ validation_target = dataframe_validation.pop('Stars')
 validation_target = keras.utils.to_categorical(validation_target)
 
 test_target = dataframe_test.pop('Stars')
-print(test_target)
 #Change target values to one-hot encoding
 test_target=keras.utils.to_categorical(test_target)
 
-#print(test_target)
 
 training_dataset = tf.data.Dataset.from_tensor_slices((dataframe_training.values, training_target))
 validation_dataset = tf.data.Dataset.from_tensor_slices((dataframe_validation.values, validation_target))
-test_dataset = tf.data.Dataset.from_tensor_slices((dataframe_test.values, test_target))
+test_dataset = tf.data.Dataset.from_tensors((dataframe_test.values, test_target))
 
 training_dataset = training_dataset.shuffle(len(dataframe_training)).batch(1)
 validation_dataset = validation_dataset.shuffle(len(dataframe_validation)).batch(1)
@@ -97,9 +95,10 @@ def five_sigmoid(x):
 	return 5 / (1 + math.e**-x)
 
 model = get_compiled_model()
-model.fit(training_dataset, batch_size=None, epochs=100, validation_data=(validation_dataset))
+model.fit(training_dataset, batch_size=None, epochs=5, validation_data=(validation_dataset))
 
 #TODO: This is a TensorSliceDataset. I need to reshape this, or figure out how to, in order for model.evaluate to work
-#test_loss, test_accuracy = model.evaluate(test_dataset)
 
-#print('\n\nTest Loss {}, Test Accuracy {}'.format(test_loss, test_accuracy))
+test_loss, test_accuracy = model.evaluate(test_dataset)
+
+print('\n\nTest Loss {}, Test Accuracy {}'.format(test_loss, test_accuracy))
