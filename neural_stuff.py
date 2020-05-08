@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+import math
 from tensorflow import keras
 from tensorflow.keras import layers
 #from keras.utils.np.utils import to_categorical
@@ -52,16 +53,16 @@ dataframe_test['Country'] = dataframe_test.Country.cat.codes
 
 training_target = dataframe_training.pop('Stars')
 #Change target values to one-hot encoding
-#training_target = keras.utils.to_categorical(training_target)
+training_target = keras.utils.to_categorical(training_target)
 
 validation_target = dataframe_validation.pop('Stars')
 #Change target values to one-hot encoding
-#validation_target = keras.utils.to_categorical(validation_target)
+validation_target = keras.utils.to_categorical(validation_target)
 
 test_target = dataframe_test.pop('Stars')
 print(test_target)
 #Change target values to one-hot encoding
-#test_target=keras.utils.to_categorical(test_target)
+test_target=keras.utils.to_categorical(test_target)
 
 #print(test_target)
 
@@ -76,24 +77,27 @@ validation_dataset = validation_dataset.shuffle(len(dataframe_validation)).batch
 def get_compiled_model():
   model = tf.keras.Sequential([
     tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Dense(50, activation='relu'),
+    tf.keras.layers.Dense(500, activation=tf.nn.relu),
     tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Dense(50, activation='relu'),
+    tf.keras.layers.Dense(250, activation=tf.nn.relu),
     tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Dense(50, activation='relu'),
+    tf.keras.layers.Dense(125, activation=tf.nn.relu),
     tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Dense(50, activation='relu'),
+    tf.keras.layers.Dense(50, activation=tf.nn.relu),
     tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Dense(1, activation='relu')
+    tf.keras.layers.Dense(1, activation=five_sigmoid)
   ])
 
-  model.compile(optimizer='adam',
+  model.compile(optimizer='Adam',
                 loss=tf.keras.losses.MeanSquaredError(),
-                metrics=['mean_squared_error'])
+                metrics=['accuracy'])
   return model
 
+def five_sigmoid(x):
+	return 5 / (1 + math.e**-x)
+
 model = get_compiled_model()
-model.fit(training_dataset, batch_size=None, epochs=10, validation_data=(validation_dataset))
+model.fit(training_dataset, batch_size=None, epochs=100, validation_data=(validation_dataset))
 
 #TODO: This is a TensorSliceDataset. I need to reshape this, or figure out how to, in order for model.evaluate to work
 #test_loss, test_accuracy = model.evaluate(test_dataset)
