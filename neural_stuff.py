@@ -18,7 +18,6 @@ dataframe_test = pd.read_csv(test_data_csv)
 dataframe_validation = pd.read_csv(validation_data_csv)
 
 
-
 #Convert brand, style, and country columns to categories (one-hot baby)
 dataframe_training['Brand'] = pd.Categorical(dataframe_training['Brand'])
 dataframe_training['Brand'] = dataframe_training.Brand.cat.codes
@@ -53,16 +52,18 @@ dataframe_test['Country'] = dataframe_test.Country.cat.codes
 
 training_target = dataframe_training.pop('Stars')
 #Change target values to one-hot encoding
-training_target = keras.utils.to_categorical(training_target)
+#training_target = keras.utils.to_categorical(training_target)
 
 validation_target = dataframe_validation.pop('Stars')
 #Change target values to one-hot encoding
-validation_target = keras.utils.to_categorical(validation_target)
+#validation_target = keras.utils.to_categorical(validation_target)
 
 test_target = dataframe_test.pop('Stars')
-Change target values to one-hot encoding
-test_target=keras.utils.to_categorical(test_target)
+print(test_target)
+#Change target values to one-hot encoding
+#test_target=keras.utils.to_categorical(test_target)
 
+#print(test_target)
 
 training_dataset = tf.data.Dataset.from_tensor_slices((dataframe_training.values, training_target))
 validation_dataset = tf.data.Dataset.from_tensor_slices((dataframe_validation.values, validation_target))
@@ -74,15 +75,21 @@ validation_dataset = validation_dataset.shuffle(len(dataframe_validation)).batch
 
 def get_compiled_model():
   model = tf.keras.Sequential([
-    tf.keras.layers.Dense(100, activation='relu'),
-    #tf.keras.layers.Dense(30, activation='relu'),
-    #tf.keras.layers.Dense(1),
-    tf.keras.layers.Dense(1, activation='tanh') #Read somewhere tanh was superior to sigmoid so why not
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Dense(50, activation='relu'),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Dense(50, activation='relu'),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Dense(50, activation='relu'),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Dense(50, activation='relu'),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Dense(1, activation='relu')
   ])
 
   model.compile(optimizer='adam',
                 loss=tf.keras.losses.MeanSquaredError(),
-                metrics=['accuracy'])
+                metrics=['mean_squared_error'])
   return model
 
 model = get_compiled_model()

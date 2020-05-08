@@ -99,4 +99,4 @@ def configure_csv(oldFile, training_data, test_data, validation_data):
         elif (count <= data_len*0.9):
             writer2.writerow(lst[1:105])
         else:
-            writer3.writerow(lst[1:105])
+             writer3.writerow(lst[1:105])
